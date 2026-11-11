@@ -1,0 +1,19 @@
+sequenceDiagram
+  participant A as PC 1 (192.168.1.10)
+  participant LAN as LAN broadcast 255.255.255.255 / 192.168.1.255
+  participant B as PC 2 (192.168.1.20)
+  Note over A,B: Method 1 - UDP broadcast (port 50505)
+  A->>LAN: "who-is-there" {id, name, port, fp}
+  LAN->>B: deliver
+  B-->>A: unicast beacon {id, name, port 5001, fp}
+  loop every 3 seconds
+    B->>LAN: beacon
+    A->>LAN: beacon
+  end
+  Note over A,B: Method 2 - active subnet scan (Scan button)
+  par 128 parallel workers over 192.168.1.1-254
+    A->>B: TCP connect :5001 + "PING"
+    B-->>A: {app:"SFT", name, port, fp}
+  end
+  Note over A: device list updated - online if seen < 15 s
+  Note over A,B: Method 3 - user types the IP shown on PC 2 (manual)

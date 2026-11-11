@@ -1,0 +1,27 @@
+flowchart TD
+  A([TCP server listening on :5001]) --> B[Read 4-byte magic]
+  B --> C{Magic?}
+  C -- "PING" --> C1[Reply public info:<br/>name, port, fingerprint] --> Z([close])
+  C -- other --> Z
+  C -- "SFT1" --> D[Verify ClientHello signature]
+  D -- invalid --> X1([Drop connection]):::bad
+  D -- valid --> E[Send signed ServerHello<br/>derive keys, key confirmation]
+  E --> F[Receive encrypted OFFER]
+  F --> G[Sanitize file name<br/>check free disk space]
+  G --> H{Trusted device AND<br/>auto-accept on?}
+  H -- Yes --> J
+  H -- No --> I[Show request in dashboard:<br/>SAS code + fingerprint + trust status]
+  I --> I2{User accepts<br/>within 120 s?}
+  I2 -- No --> X2([Send REJECT]):::bad
+  I2 -- Yes --> I3[Optionally store key as trusted - TOFU] --> J[Send ACCEPT]
+  J --> K[Receive frame]
+  K --> L{AES-GCM tag valid<br/>and counter in order?}
+  L -- No --> X3([SECURITY ERROR: tampered / replayed<br/>delete .part file]):::bad
+  L -- Yes --> M{DATA or END?}
+  M -- DATA --> N[Write to .part file<br/>update SHA-256] --> K
+  M -- END --> O{SHA-256 equal to OFFER?}
+  O -- No --> X4([Integrity failure, delete]):::bad
+  O -- Yes --> P[Move to Received folder<br/>send RESULT ok]
+  P --> Q([Done]):::ok
+  classDef ok fill:#0f3d2e,stroke:#34d399,color:#e6fff5
+  classDef bad fill:#3d0f0f,stroke:#f87171,color:#ffe6e6

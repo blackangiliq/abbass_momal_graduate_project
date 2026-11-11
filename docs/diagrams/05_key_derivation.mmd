@@ -1,0 +1,17 @@
+flowchart TD
+  ES["Sender ephemeral X25519 private eS"] --> DH(("X25519<br/>ECDH"))
+  ER["Receiver ephemeral X25519 public ER"] --> DH
+  DH --> SH["shared secret (32 bytes)"]
+  CH["ClientHello bytes"] --> TH["transcript = SHA-256('SFT-v1-TRANSCRIPT' | ClientHello | ServerHello)"]
+  SHL["ServerHello bytes"] --> TH
+  SH --> HK1{{"HKDF-SHA256<br/>salt = transcript<br/>info = 'SFT-v1 session keys'<br/>L = 72 bytes"}}
+  TH --> HK1
+  HK1 --> K1["K_c2s : 32 B<br/>AES-256 key sender->receiver"]
+  HK1 --> K2["K_s2c : 32 B<br/>AES-256 key receiver->sender"]
+  HK1 --> K3["IV_c2s : 4 B nonce prefix"]
+  HK1 --> K4["IV_s2c : 4 B nonce prefix"]
+  SH --> HK2{{"HKDF-SHA256<br/>info = 'SFT-v1 SAS' | IK_A | IK_B<br/>L = 8 bytes"}}
+  TH --> HK2
+  HK2 --> SAS["SAS = int mod 10^6<br/>e.g. 600 106"]
+  classDef key fill:#0f3d2e,stroke:#34d399,color:#e6fff5
+  class K1,K2,K3,K4,SAS key

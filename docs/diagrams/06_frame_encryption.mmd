@@ -1,0 +1,13 @@
+flowchart LR
+  P["Plaintext chunk<br/>type(1B) + data (<=64 KiB)"] --> G
+  N["Nonce 96-bit = IV(4B) || counter(8B, big-endian)"] --> G
+  AAD["AAD = 'SFT-v1|c2s|' || counter"] --> G
+  KEY["K_c2s (256-bit)"] --> G
+  G{{"AES-256-GCM<br/>Encrypt"}} --> CT["Ciphertext (same length)"]
+  G --> TAG["Auth tag 128-bit"]
+  CT --> F["Frame on the wire:<br/>Length(4B) | Ciphertext | Tag(16B)"]
+  TAG --> F
+  F --> NET(("TCP :5001"))
+  NET --> V{{"Receiver: AES-256-GCM Decrypt<br/>with EXPECTED counter"}}
+  V -- "tag OK" --> OK["plaintext, counter++"]
+  V -- "tag FAIL" --> BAD["modified / replayed / reordered<br/>-> close connection"]

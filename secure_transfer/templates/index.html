@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>نقل الملفات الآمن</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%2334d399' d='M12 1 3 5v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V5z'/></svg>">
+  <script>window.SFT_TOKEN = "{{ token }}";</script>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1 3 5v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V5z"/><path class="lk" d="M9 11V9a3 3 0 0 1 6 0v2h1v6H8v-6zm2 0h2V9a1 1 0 0 0-2 0z"/></svg>
+    <div>
+      <h1>نظام نقل الملفات الآمن</h1>
+      <p>Secure File Transfer System with End-to-End Encryption</p>
+    </div>
+  </div>
+  <div class="algos" title="الخوارزميات المستخدمة">
+    <span>X25519</span><span>Ed25519</span><span>HKDF-SHA256</span><span>AES-256-GCM</span>
+  </div>
+</header>
+
+<main class="grid">
+  <!-- this device -->
+  <section class="card me">
+    <h2>هذا الجهاز</h2>
+    <div class="ipbox">
+      <div class="lbl">عنوان IP الخاص بك (أعطه للجهاز الآخر)</div>
+      <div class="ip" id="myIp">…</div>
+      <div class="sub" id="myIps"></div>
+    </div>
+    <div class="row"><span class="k">اسم الجهاز</span>
+      <span class="v"><input id="myName" maxlength="64"><button class="btn sm ghost" id="saveName">حفظ</button></span></div>
+    <div class="row"><span class="k">منفذ الاستقبال</span><span class="v mono" id="myPort"></span></div>
+    <div class="row col"><span class="k">بصمة الهوية (Ed25519)</span><span class="v mono fp" id="myFp"></span></div>
+    <label class="switch"><input type="checkbox" id="autoAccept"><span></span>
+      قبول تلقائي من الأجهزة الموثوقة</label>
+    <button class="btn ghost wide" id="openFolder">📂 فتح مجلد الملفات المستلمة</button>
+    <div class="sub mono" id="recvDir"></div>
+  </section>
+
+  <!-- peers -->
+  <section class="card peers">
+    <div class="card-h">
+      <h2>الأجهزة على الشبكة</h2>
+      <button class="btn" id="scanBtn"><span class="spin"></span><span class="t">🔍 مسح الشبكة</span></button>
+    </div>
+    <div class="hint" id="scanInfo">يتم اكتشاف الأجهزة تلقائياً عبر البث (UDP Broadcast) ومسح الشبكة المحلية.</div>
+    <ul id="peerList" class="peer-list"></ul>
+    <div class="manual">
+      <div class="lbl">أو أدخل عنوان IP الجهاز الآخر يدوياً:</div>
+      <div class="manual-row">
+        <input id="manIp" placeholder="مثال: 192.168.1.20" dir="ltr">
+        <input id="manPort" value="5001" dir="ltr" class="port">
+        <button class="btn" id="manAdd">اتصال</button>
+      </div>
+      <div class="err" id="manErr"></div>
+    </div>
+  </section>
+
+  <!-- send -->
+  <section class="card send">
+    <h2>إرسال ملفات</h2>
+    <div class="target" id="target">لم يتم اختيار جهاز — اختر جهازاً من القائمة</div>
+    <label class="drop" id="drop">
+      <input type="file" id="fileInput" multiple hidden>
+      <div class="drop-ic">⬆</div>
+      <div>اسحب الملفات وأفلتها هنا<br><small>أو اضغط للاختيار</small></div>
+    </label>
+    <ul class="flist" id="fileList"></ul>
+    <button class="btn primary wide" id="sendBtn" disabled>🔒 تشفير وإرسال</button>
+  </section>
+
+  <!-- transfers -->
+  <section class="card transfers">
+    <h2>عمليات النقل</h2>
+    <div id="transferList" class="tlist"><div class="empty">لا توجد عمليات نقل بعد</div></div>
+  </section>
+</main>
+
+<footer>كل الملفات مشفّرة من طرف إلى طرف — لا يرى أي جهاز وسيط محتواها. لوحة التحكم متاحة فقط من هذا الحاسوب (127.0.0.1).</footer>
+
+<!-- incoming request modal -->
+<div class="modal" id="modal" hidden>
+  <div class="dlg">
+    <h3>📥 طلب استلام ملف</h3>
+    <div class="warn" id="mWarn" hidden></div>
+    <div class="m-grid">
+      <span>المرسل</span><b id="mFrom"></b>
+      <span>الملف</span><b id="mFile"></b>
+      <span>الحجم</span><b id="mSize"></b>
+      <span>البصمة</span><b class="mono fp" id="mFp"></b>
+    </div>
+    <div class="sas-box">
+      <div>رمز التحقق (يجب أن يطابق الرمز الظاهر عند المرسل)</div>
+      <div class="sas" id="mSas"></div>
+    </div>
+    <label class="chk"><input type="checkbox" id="mTrust" checked> وثّق هذا الجهاز للمرات القادمة</label>
+    <div class="m-actions">
+      <button class="btn primary" id="mAccept">قبول واستلام</button>
+      <button class="btn danger" id="mReject">رفض</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

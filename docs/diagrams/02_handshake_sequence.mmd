@@ -1,0 +1,26 @@
+sequenceDiagram
+  autonumber
+  participant S as Sender (Client)
+  participant R as Receiver (Server :5001)
+  Note over S,R: Each device owns a long-term Ed25519 identity key (IK)
+  S->>R: TCP connect + magic "SFT1"
+  Note left of S: generate ephemeral X25519 (eS, ES)<br/>nonce_c = 32 random bytes
+  S->>R: ClientHello {name, device_id, IK_S.pub, ES, nonce_c}<br/>+ Sig_IK_S("HELLO|client"|body)
+  Note right of R: verify signature with IK_S.pub
+  Note right of R: generate ephemeral X25519 (eR, ER)
+  R->>S: ServerHello {name, device_id, IK_R.pub, ER, nonce_s}<br/>+ Sig_IK_R("HELLO|server"|body|SHA256(ClientHello))
+  Note left of S: verify signature + check fingerprint(IK_R)<br/>matches the discovered one (anti-MITM)
+  Note over S,R: shared = X25519(e, E_peer)   transcript = SHA256(ClientHello || ServerHello)
+  Note over S,R: HKDF-SHA256(shared, salt=transcript) -> K_c2s, K_s2c, IV_c2s, IV_s2c, SAS
+  S->>R: AES-GCM{ FINISHED(transcript) }
+  R->>S: AES-GCM{ FINISHED(transcript) }
+  Note over S,R: Key confirmation OK - both users can compare the 6-digit SAS code
+  S->>R: AES-GCM{ OFFER(name, size, SHA-256) }
+  R-->>R: user sees SAS + fingerprint, accepts
+  R->>S: AES-GCM{ ACCEPT }
+  loop every 64 KiB chunk
+    S->>R: AES-GCM{ DATA chunk_i }  nonce = IV || counter_i
+  end
+  S->>R: AES-GCM{ END }
+  Note right of R: compare SHA-256 of received data<br/>with SHA-256 in OFFER
+  R->>S: AES-GCM{ RESULT ok, sha256 }

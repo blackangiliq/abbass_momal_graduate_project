@@ -1,0 +1,13 @@
+flowchart TD
+  A([Double-click START.bat]) --> B{Python 3.9+ installed?}
+  B -- No --> B1[Install via winget<br/>or show download link] --> B
+  B -- Yes --> C{.venv exists?}
+  C -- No --> C1[Create virtual env<br/>pip install -r requirements.txt] --> D
+  C -- Yes --> D{Firewall rules exist?}
+  D -- No --> D1[Ask for Administrator once<br/>netsh: allow TCP 5001 + UDP 50505] --> E
+  D -- Yes --> E[python -m secure_transfer]
+  E --> F[Load / create Ed25519 identity]
+  F --> G[Start TCP server :5001<br/>Start UDP discovery :50505<br/>Start background subnet scan]
+  G --> H[Print this PC's IP address in console]
+  H --> I[Open dashboard http://127.0.0.1:8000]
+  I --> J([Ready - other PC appears automatically])

@@ -1,0 +1,25 @@
+flowchart TD
+  A([Start: user drops file in dashboard]) --> B{Peer selected?}
+  B -- No --> B1[Discover: wait for broadcast / press Scan / enter IP] --> B
+  B -- Yes --> C[Compute SHA-256 of file]
+  C --> D[TCP connect to peer IP:5001]
+  D --> E[Handshake: X25519 + Ed25519 signatures]
+  E --> F{Signature valid AND<br/>fingerprint matches?}
+  F -- No --> X1([ABORT: possible MITM]):::bad
+  F -- Yes --> G{Peer key changed<br/>since last time?}
+  G -- Yes --> X2([ABORT: key change warning]):::bad
+  G -- No --> H[Derive session keys with HKDF<br/>show SAS code]
+  H --> I[Send encrypted OFFER]
+  I --> J{Receiver accepted?}
+  J -- No / timeout --> X3([Rejected]):::bad
+  J -- Yes --> K[Read 64 KiB chunk]
+  K --> L[Encrypt AES-256-GCM<br/>nonce = IV + counter]
+  L --> M[Send frame, update progress]
+  M --> N{More data?}
+  N -- Yes --> K
+  N -- No --> O[Send END]
+  O --> P{Receiver RESULT ok<br/>and hash equal?}
+  P -- Yes --> Q([Done - verified]):::ok
+  P -- No --> X4([Failed integrity]):::bad
+  classDef ok fill:#0f3d2e,stroke:#34d399,color:#e6fff5
+  classDef bad fill:#3d0f0f,stroke:#f87171,color:#ffe6e6

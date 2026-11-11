@@ -1,0 +1,23 @@
+flowchart TB
+  subgraph PC1["PC 1 - Sender"]
+    direction TB
+    B1["Browser Dashboard"] -->|"HTTP 127.0.0.1:8000 + token"| W1["Flask Web API (localhost only)"]
+    W1 --> D1["Discovery: UDP beacons + subnet scan"]
+    W1 --> TM1["Transfer Manager (client)"]
+    TM1 --> C1["Crypto Engine: X25519 / Ed25519 / HKDF / AES-256-GCM"]
+    C1 --- K1[("identity key + trusted peers")]
+  end
+  subgraph PC2["PC 2 - Receiver"]
+    direction TB
+    D2["Discovery: UDP beacons + subnet scan"]
+    TM2["Transfer Manager (TCP server :5001)"]
+    TM2 --> C2["Crypto Engine: X25519 / Ed25519 / HKDF / AES-256-GCM"]
+    C2 --- K2[("identity key + Received folder")]
+    W2["Flask Web API (localhost only)"] --> D2
+    W2 --> TM2
+    B2["Browser Dashboard"] -->|"HTTP 127.0.0.1:8000 + token"| W2
+  end
+  D1 <-.->|"UDP 50505 broadcast - public info only"| D2
+  C1 ==>|"TCP 5001 - end-to-end encrypted channel"| C2
+  classDef sec fill:#0f3d2e,stroke:#34d399,color:#e6fff5
+  class C1,C2 sec

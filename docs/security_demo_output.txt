@@ -1,0 +1,128 @@
+$ head -c 45 secret.txt
+TOP SECRET: exam answers, password=Hunter2
+
+
+### 1) EAVESDROPPER (sniff mode) - what an attacker on the network sees
+[proxy] sniff mode, listening on :6011 -> 127.0.0.1:5002
+
+[sender->receiver] 4 bytes captured:
+    0000  53 46 54 31                                      SFT1
+
+[sender->receiver] 366 bytes captured:
+    0000  00 00 01 6a 7b 22 62 6f 64 79 22 3a 7b 22 64 65  ...j{"body":{"de
+    0010  76 69 63 65 5f 69 64 22 3a 22 39 33 37 36 39 34  vice_id":"937694
+    0020  31 31 66 30 31 30 34 63 31 65 62 64 65 38 31 64  11f0104c1ebde81d
+    0030  35 66 39 30 32 63 31 37 66 37 22 2c 22 65 70 68  5f902c17f7","eph
+
+[receiver->sender] 367 bytes captured:
+    0000  00 00 01 6b 7b 22 62 6f 64 79 22 3a 7b 22 64 65  ...k{"body":{"de
+    0010  76 69 63 65 5f 69 64 22 3a 22 39 64 32 30 34 61  vice_id":"9d204a
+    0020  35 63 34 36 37 34 34 65 65 63 38 65 61 61 64 33  5c46744eec8eaad3
+    0030  34 38 30 36 62 37 37 66 64 65 22 2c 22 65 70 68  4806b77fde","eph
+
+[receiver->sender] 120 bytes captured:
+    0000  00 00 00 74 45 cc b1 37 a0 1a 5d 92 b3 8d f1 9a  ...tE..7..].....
+    0010  b2 f5 6d b6 8b 9d ed c3 49 c6 c0 6f 2a c9 74 11  ..m.....I..o*.t.
+    0020  a9 97 dc 49 63 91 c3 dd 3f 93 65 f1 d9 24 ec e7  ...Ic...?.e..$..
+    0030  50 1d fd 26 2a c6 8c c4 8e 6d 86 20 f1 53 e7 be  P..&*....m. .S..
+
+[sender->receiver] 120 bytes captured:
+    0000  00 00 00 74 71 23 14 24 75 0e a6 70 a3 b3 d3 63  ...tq#.$u..p...c
+    0010  52 67 89 b8 33 f7 2c d2 b0 f1 d0 5f 51 bc b9 44  Rg..3.,...._Q..D
+    0020  b1 a9 46 8d c7 65 eb fa 41 4a 6b 66 5d ef f0 a9  ..F..e..AJkf]...
+    0030  c2 ae 92 89 88 2c f9 26 32 54 34 e7 61 0b 8c 55  .....,.&2T4.a..U
+
+[sender->receiver] 180 bytes captured:
+    0000  00 00 00 b0 7b d0 96 b0 2b c5 48 14 d7 86 c2 d9  ....{...+.H.....
+    0010  5b c4 c6 1b b5 ae 6b f5 b7 db 47 65 0c ce c5 3b  [.....k...Ge...;
+    0020  d0 f5 1e 3f 1e 5f 8a 4c 62 ce 1a fd 3a 56 93 7f  ...?._.Lb...:V..
+    0030  18 aa 0e bc 24 c5 be d8 3e 1d 80 bb 05 c5 9d 0a  ....$...>.......
+
+[receiver->sender] 38 bytes captured:
+    0000  00 00 00 22 e9 53 39 48 2b c4 3c 92 35 06 26 b5  ...".S9H+.<.5.&.
+    0010  9f 03 73 8c 02 d5 f7 20 09 e3 cb 78 ee a5 08 a9  ..s.... ...x....
+    0020  e9 70 53 eb 70 72                                .pS.pr
+
+[sender->receiver] 65536 bytes captured:
+    0000  00 01 00 11 6d f3 25 5f 2d 19 79 83 07 81 d1 8f  ....m.%_-.y.....
+    0010  78 63 6f 06 02 11 3c f5 a0 72 af 3c 91 7f e9 47  xco...<..r.<...G
+    0020  90 79 c3 b4 22 aa dc 04 01 0c 3c c0 b3 f4 9c 46  .y..".....<....F
+    0030  5d 33 ba ea 05 3d fa 89 14 c3 e3 6d f8 3e ec 9e  ]3...=.....m.>..
+
+[sender->receiver] 20506 bytes captured:
+    0000  a3 e6 71 59 82 11 86 3e dc a3 90 b7 c2 5a 3c f5  ..qY...>.....Z<.
+    0010  06 20 29 ee 59 00 00 50 01 3e 7c 37 1b b7 8d c8  . ).Y..P.>|7....
+    0020  05 17 54 18 7e 05 fd c5 48 dc 72 aa 60 ba 2b 3e  ..T.~...H.r.`.+>
+    0030  51 be 4e de 29 ac b2 c4 f4 09 e6 a2 dc 2b 5a 88  Q.N.)........+Z.
+[receiver->sender] closed after 649 bytes
+[sender->receiver] closed after 86747 bytes
+
+Sending secret.txt to 127.0.0.1:6011 ... (waiting for receiver to accept)
+[09:14:34] [sent] secret.txt -> Desktop-2 (127.0.0.1) verified
+Peer           : Desktop-2  fingerprint B445-1A86-6F2E-5B17-F9C6-9167-7421-F5AD
+Safety code    : 734 118   (must match the code on the receiver)
+Result         : done 
+SHA-256        : 0fa621329e8ec94359dac72827fdbecffbb70ebcbd8a66a735cd0f6b0309de5a
+
+### 2) ACTIVE ATTACK (tamper mode) - one bit flipped in transit
+[proxy] tamper mode, listening on :6012 -> 127.0.0.1:5002
+
+[sender->receiver] 370 bytes captured:
+    0000  53 46 54 31 00 00 01 6a 7b 22 62 6f 64 79 22 3a  SFT1...j{"body":
+    0010  7b 22 64 65 76 69 63 65 5f 69 64 22 3a 22 39 33  {"device_id":"93
+    0020  37 36 39 34 31 31 66 30 31 30 34 63 31 65 62 64  769411f0104c1ebd
+    0030  65 38 31 64 35 66 39 30 32 63 31 37 66 37 22 2c  e81d5f902c17f7",
+
+[receiver->sender] 367 bytes captured:
+    0000  00 00 01 6b 7b 22 62 6f 64 79 22 3a 7b 22 64 65  ...k{"body":{"de
+    0010  76 69 63 65 5f 69 64 22 3a 22 39 64 32 30 34 61  vice_id":"9d204a
+    0020  35 63 34 36 37 34 34 65 65 63 38 65 61 61 64 33  5c46744eec8eaad3
+    0030  34 38 30 36 62 37 37 66 64 65 22 2c 22 65 70 68  4806b77fde","eph
+
+[receiver->sender] 120 bytes captured:
+    0000  00 00 00 74 07 75 11 76 59 41 2f 4f 16 d2 24 c9  ...t.u.vYA/O..$.
+    0010  d0 46 c1 d0 69 dc 5c ed a8 bb 49 2e e1 8c 97 04  .F..i.\...I.....
+    0020  2c 75 ee 47 0f 85 37 a1 59 11 0e 25 0d ec e2 6b  ,u.G..7.Y..%...k
+    0030  c0 06 cc 9c 68 a9 97 dc dd f9 83 1a 52 0c 90 5f  ....h.......R.._
+
+[sender->receiver] 120 bytes captured:
+    0000  00 00 00 74 c6 e7 29 6f 9e a4 e6 ef 09 c4 7f 26  ...t..)o.......&
+    0010  d2 cc eb 32 31 78 19 fb 17 45 e4 d0 79 72 22 22  ...21x...E..yr""
+    0020  a6 25 63 1b a0 7e d1 f3 d7 07 9c 7c 3d d0 79 48  .%c..~.....|=.yH
+    0030  6c ae 74 7f b9 77 25 b5 03 fa 80 32 ed 7c db 5f  l.t..w%....2.|._
+
+[sender->receiver] 180 bytes captured:
+    0000  00 00 00 b0 a6 97 96 5f bc ab aa be 68 ac a4 41  ......._....h..A
+    0010  47 d8 83 c5 ad ec e3 f0 b5 9b f4 da 0a ea c1 c8  G...............
+    0020  21 77 e4 c1 66 e0 dc 62 86 14 49 c2 39 fa 2a 2c  !w..f..b..I.9.*,
+    0030  f5 fa 31 d1 98 13 e0 c3 67 28 b8 97 d1 07 4c 08  ..1.....g(....L.
+
+[receiver->sender] 38 bytes captured:
+    0000  00 00 00 22 2f eb 39 fc 10 a2 d1 3c eb 37 74 17  ..."/.9....<.7t.
+    0010  30 c7 bf 3a 45 78 00 0f 71 43 fc 1b f6 a2 a5 7c  0..:Ex..qC.....|
+    0020  0a 10 9a 40 ab 09                                ...@..
+
+[sender->receiver] 65536 bytes captured:
+    0000  00 01 00 11 f6 fb 0b f5 33 d7 7f b0 71 a5 65 89  ........3...q.e.
+    0010  8d 1b 75 20 90 5e d0 2e 61 14 b2 63 80 4c a4 6b  ..u .^..a..c.L.k
+    0020  96 5a 2f e0 8f ef 06 f1 fe 71 8c 2a 57 85 93 c2  .Z/......q.*W...
+    0030  78 c5 b8 f8 87 d2 9e 98 b7 a1 0d 5d db 9a b0 83  x..........]....
+
+[ATTACK] flipped 1 bit in the middle of a 65536-byte segment!
+
+[sender->receiver] 20541 bytes captured:
+    0000  5f 8e af cd 70 75 90 e8 96 40 a4 50 98 ad 34 de  _...pu...@.P..4.
+    0010  bd 6b 44 97 c7 00 00 50 01 74 b0 0e 0f 38 4b 48  .kD....P.t...8KH
+    0020  5b 25 3d 55 fd 40 f2 0b 1b 1c 13 1a d8 7c 48 25  [%=U.@.......|H%
+    0030  8b c4 bd d2 6c 34 3f 99 a6 b7 83 c8 33 3d 88 79  ....l4?.....3=.y
+[receiver->sender] closed after 525 bytes
+[sender->receiver] closed after 86747 bytes
+
+--- sender:
+Sending secret.txt to 127.0.0.1:6012 ... (waiting for receiver to accept)
+Peer           : Desktop-2  fingerprint B445-1A86-6F2E-5B17-F9C6-9167-7421-F5AD
+Safety code    : 214 302   (must match the code on the receiver)
+Result         : failed connection closed by peer
+SHA-256        : 0fa621329e8ec94359dac72827fdbecffbb70ebcbd8a66a735cd0f6b0309de5a
+--- receiver log:
+[09:14:36] [security] connection from 127.0.0.1 rejected: authentication failed: data was modified, replayed or forged
